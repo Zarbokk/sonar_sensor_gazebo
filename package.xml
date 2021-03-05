@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>sonar_sensor_gazebo</name>
+    <description>
+        Sonar Sensors for Gazebo
+    </description>
+    <version>0.0.11</version>
+    <license>BSD</license>
+    <author>Tim Hansen</author>
+    <maintainer email="t.hansen@jacobs-university.de">Tim Hansen</maintainer>
+
+    <buildtool_depend>catkin</buildtool_depend>
+    <depend>gazebo_dev</depend>
+    <depend>gazebo_plugins</depend>
+    <depend>gazebo_ros</depend>
+    <exec_depend>urdf</exec_depend>
+    <exec_depend>xacro</exec_depend>
+
+</package>
