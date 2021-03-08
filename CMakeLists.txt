@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(sonar_sensor_gazebo)
 
-find_package(catkin REQUIRED gazebo_dev gazebo_plugins gazebo_ros roscpp std_msgs)
+find_package(catkin REQUIRED COMPONENTS gazebo_dev gazebo_plugins gazebo_ros roscpp std_msgs)
 find_package(gazebo REQUIRED)
 
 
@@ -12,6 +12,7 @@ include_directories(
         ${std_msgs_INCLUDE_DIRS}
         ${GAZEBO_INCLUDE_DIRS}
         ${GAZEBO_MSG_INCLUDE_DIRS}
+        ${Boost_INCLUDE_DIR}
 )
 link_directories(${GAZEBO_LIBRARY_DIRS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
@@ -19,6 +20,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
 
 catkin_package(INCLUDE_DIRS
         CATKIN_DEPENDS
+        roscpp
         gazebo_dev
         gazebo_plugins
         gazebo_ros)
@@ -29,8 +31,8 @@ install(DIRECTORY launch meshes rviz urdf world
         )
 
 
-add_library(rotating_sonar_plugin SHARED src/rotatingSonarPlugin.cc)
-target_link_libraries(rotating_sonar_plugin ${GAZEBO_LIBRARIES} ${roscpp_LIBRARIES})
+add_library(rotating_sonar_control_plugin SHARED src/rotatingSonarControlPlugin.cc)
+target_link_libraries(rotating_sonar_control_plugin ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
 
-add_executable(vel src/vel.cc)
-target_link_libraries(vel ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES} ${roscpp_LIBRARIES})
+add_library(rotating_sonar_ros_plugin SHARED src/rotatingSonarRosPlugin.cc)
+target_link_libraries(rotating_sonar_ros_plugin ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES} RayPlugin)
