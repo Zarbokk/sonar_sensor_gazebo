@@ -9,6 +9,9 @@
 #include <gazebo/physics/physics.hh>
 //#include <gazebo/transport/transport.hh>
 #include <gazebo/msgs/msgs.hh>
+#include <ros/ros.h>
+#include "std_msgs/Float64.h"
+#include <cmath>
 
 namespace gazebo {
     /// \brief A plugin to control a Velodyne sensor.
@@ -29,7 +32,7 @@ namespace gazebo {
                 velocity = _sdf->Get<double>("velocity");
             // Safety check
             if (_model->GetJointCount() == 0) {
-                std::cerr << "Invalid joint count, Velodyne plugin not loaded\n";
+                std::cerr << "Invalid joint count, Sonar plugin not loaded\n";
                 return;
             }
             // Store the model pointer for convenience.
@@ -51,6 +54,8 @@ namespace gazebo {
             this->model->GetJointController()->SetVelocityTarget(
                     this->joint->GetScopedName(), velocity);
             // Create the node
+
+            boost::thread callback_laser_queue_thread_ = boost::thread(boost::bind(&RotatingSonarControlPlugin::positionLaserPublishingThread, this));
             
         }
 
@@ -66,6 +71,32 @@ namespace gazebo {
         /// \brief A PID controller for the joint.
         common::PID pid;
         /// \brief A node used for transport
+
+        void positionLaserPublishingThread() {
+            int argc = 0;
+            char **argv = NULL;
+            ros::init(argc, argv, "rotationAngleSonar");
+            ros::start();
+            ros::NodeHandle n_;
+            ros::Publisher publisherAngleofSonar;
+            publisherAngleofSonar = n_.advertise<std_msgs::Float64>("sonar/currentRelativeAngleSonar", 10);
+            ros::Rate loop_rate(100);
+            while (ros::ok())
+            {
+                double currentAngle = this->joint->Position();
+                currentAngle = std::fmod(currentAngle,2*M_PI);
+                std_msgs::Float64 currentAngleMsg;
+                currentAngleMsg.data = currentAngle;
+                publisherAngleofSonar.publish(currentAngleMsg);
+                ros::spinOnce();
+                loop_rate.sleep();
+                //std::cerr << "CurrentAngle: "<< currentAngle <<"\n";
+            }
+//            while (true) {
+//                //std::cerr << "ConnectCb: "<< this->joint->Position() <<"\n";
+//
+//            }
+        }
     };
 
     // Tell Gazebo about this plugin, so that Gazebo can call Load on this plugin.

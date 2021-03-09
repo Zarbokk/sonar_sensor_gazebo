@@ -38,6 +38,8 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/lock_guard.hpp>
 
+#include <pcl/point_cloud.h>
+#include <pcl_conversions/pcl_conversions.h>
 
 namespace gazebo {
     /// \brief A plugin to control a Velodyne sensor.

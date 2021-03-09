@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(sonar_sensor_gazebo)
 
-find_package(catkin REQUIRED COMPONENTS gazebo_dev gazebo_plugins gazebo_ros roscpp std_msgs)
+find_package(catkin REQUIRED COMPONENTS gazebo_dev gazebo_plugins gazebo_ros roscpp std_msgs pcl_ros)
 find_package(gazebo REQUIRED)
-
+find_package(PCL 1.10 REQUIRED COMPONENTS common io visualization)
 
 include_directories(
         include
@@ -36,3 +36,6 @@ target_link_libraries(rotating_sonar_control_plugin ${GAZEBO_LIBRARIES} ${catkin
 
 add_library(rotating_sonar_ros_plugin SHARED src/rotatingSonarRosPlugin.cc)
 target_link_libraries(rotating_sonar_ros_plugin ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES} RayPlugin)
+
+add_executable(pcl_sonar_grab_full_scan src/publishingSonarScanComplete.cpp)
+target_link_libraries(pcl_sonar_grab_full_scan ${catkin_LIBRARIES})
