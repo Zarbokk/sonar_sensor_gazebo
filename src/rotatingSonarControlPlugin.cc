@@ -37,26 +37,21 @@ namespace gazebo {
             }
             // Store the model pointer for convenience.
             this->model = _model;
+            for (int i = 0; i < _model->GetJoints().size(); i++) {
+                if(_model->GetJoints()[i]->GetName().find("rotating_sonar_base_to_top_joint") != std::string::npos){
+                    this->joint=_model->GetJoints()[i];
+                }
+            }
+            if(this->joint==NULL){
+                std::cerr << "ERROR JOINT POINTER NULL\n";
+            }
 
-            // Get the first joint. We are making an assumption about the model
-            // having one joint that is the rotational joint.
-            this->joint = _model->GetJoints()[0];
 
-            // Setup a P-controller, with a gain of 0.1.
-            this->pid = common::PID(0.1, 0, 0);
+            this->joint->SetParam("fmax",0, 100.0);
+            this->joint->SetParam("vel",0, velocity);
 
-            // Apply the P-controller to the joint.
-            this->model->GetJointController()->SetVelocityPID(
-                    this->joint->GetScopedName(), this->pid);
-
-            // Set the joint's target velocity. This target velocity is just
-            // for demonstration purposes.
-            this->model->GetJointController()->SetVelocityTarget(
-                    this->joint->GetScopedName(), velocity);
-            // Create the node
-
-            boost::thread callback_laser_queue_thread_ = boost::thread(boost::bind(&RotatingSonarControlPlugin::positionLaserPublishingThread, this));
-            
+            boost::thread callback_laser_queue_thread_ = boost::thread(
+                    boost::bind(&RotatingSonarControlPlugin::positionLaserPublishingThread, this));
         }
 
     private:
@@ -73,6 +68,7 @@ namespace gazebo {
         /// \brief A node used for transport
 
         void positionLaserPublishingThread() {
+            std::cerr << "Starting Ros for current angle\n";
             int argc = 0;
             char **argv = NULL;
             ros::init(argc, argv, "rotationAngleSonar");
@@ -81,16 +77,15 @@ namespace gazebo {
             ros::Publisher publisherAngleofSonar;
             publisherAngleofSonar = n_.advertise<std_msgs::Float64>("sonar/currentRelativeAngleSonar", 10);
             ros::Rate loop_rate(100);
-            while (ros::ok())
-            {
+            while (ros::ok()) {
                 double currentAngle = this->joint->Position();
-                currentAngle = std::fmod(currentAngle,2*M_PI);
+                currentAngle = std::fmod(currentAngle, 2 * M_PI);
                 std_msgs::Float64 currentAngleMsg;
                 currentAngleMsg.data = currentAngle;
                 publisherAngleofSonar.publish(currentAngleMsg);
                 ros::spinOnce();
-                loop_rate.sleep();
                 //std::cerr << "CurrentAngle: "<< currentAngle <<"\n";
+                loop_rate.sleep();
             }
 //            while (true) {
 //                //std::cerr << "ConnectCb: "<< this->joint->Position() <<"\n";

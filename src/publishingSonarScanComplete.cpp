@@ -48,7 +48,7 @@ public:
         if(currentAngle-lastAngle<0){
             sensor_msgs::PointCloud2 cloud_msg;
             pcl::toROSMsg(fullScanCloud, cloud_msg);
-            cloud_msg.header.frame_id = "map_ned";
+            cloud_msg.header.frame_id = "rotating_sonar_top";
             cloud_msg.header.stamp = ros::Time::now();
             demoPublisher_.publish(cloud_msg);
             fullScanCloud = pcl::PointCloud<pcl::PointXYZ>();

@@ -205,7 +205,7 @@ namespace gazebo {
         sensor_msgs::PointCloud2 cloud_msg;
 
         pcl::toROSMsg(myCloud, cloud_msg);
-        cloud_msg.header.frame_id = "map_ned";
+        cloud_msg.header.frame_id = "rotating_sonar_top";
         cloud_msg.header.stamp = ros::Time::now();
 
         // Publish output
