@@ -1,6 +1,9 @@
 
 
 #include <rotatingSonarRosPlugin.h>
+#if GAZEBO_GPU_RAY
+#define RaySensor GpuRaySensor
+#endif
 
 namespace gazebo {
 
@@ -16,8 +19,7 @@ namespace gazebo {
         parent_ray_sensor_ = boost::dynamic_pointer_cast<sensors::RaySensor>(_parent);
 #endif
         if (!parent_ray_sensor_) {
-            gzthrow("GazeboRosSonar" << STR_Gpu << "Laser controller requires a " << STR_Gpu
-                                     << "Ray Sensor as its parent");
+            gzthrow("GazeboRosSonar" <<  "Laser controller requires a " <<  "Ray Sensor as its parent");
         }
 
         //SDF TESTS:
@@ -78,8 +80,8 @@ namespace gazebo {
         // Start custom queue for laser
         callback_laser_queue_thread_ = boost::thread(boost::bind(&RotatingSonarRosPlugin::laserQueueThread, this));
 #if GAZEBO_MAJOR_VERSION >= 7
-        ROS_INFO("Velodyne %slaser plugin ready, %i lasers", STR_GPU_, parent_ray_sensor_->VerticalRangeCount());
-        ROS_INFO("Velodyne %slaser plugin ready, %i lasers", STR_GPU_, parent_ray_sensor_->RayCount());
+        ROS_INFO("Velodyne laser plugin ready, %i lasers", parent_ray_sensor_->VerticalRangeCount());
+        ROS_INFO("Velodyne laser plugin ready, %i lasers", parent_ray_sensor_->RayCount());
 #else
         ROS_INFO("Velodyne %slaser plugin ready, %i lasers", STR_GPU_, parent_ray_sensor_->GetHorizontalRangeCount());
 #endif

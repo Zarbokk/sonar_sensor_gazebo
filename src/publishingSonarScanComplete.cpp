@@ -44,14 +44,16 @@ public:
         pointsToRemove(*newScanCloud);
         fullScanCloud +=*newScanCloud;
 
-
-        if(currentAngle-lastAngle<0){
+        if(currentAngle-lastAngle<0){//@TODO evtl noch falsch sollte was cooles her
             sensor_msgs::PointCloud2 cloud_msg;
             pcl::toROSMsg(fullScanCloud, cloud_msg);
-            cloud_msg.header.frame_id = "rotating_sonar_top";
+            cloud_msg.header.frame_id = "rotating_sonar_bot";
             cloud_msg.header.stamp = ros::Time::now();
             demoPublisher_.publish(cloud_msg);
             fullScanCloud = pcl::PointCloud<pcl::PointXYZ>();
+//            if (abs(currentAngle-lastAngle+currentAngle-2*M_PI)<0.01 && currentAngle-lastAngle+currentAngle-2*M_PI<0){
+//                currentAngle = 0;
+//            }
         }
         lastAngle = currentAngle;
 
@@ -60,23 +62,32 @@ public:
     void pointsToRemove(pcl::PointCloud<pcl::PointXYZ> &pointCloud){
         int j = 0;
         float x,y;
+        std::vector<float> xVector,yVector;
         for(int i = 0 ; i<pointCloud.size();i++){//calculating the mean
             double distance = sqrt(pow(pointCloud.points[i].x,2)+pow(pointCloud.points[i].y,2)+pow(pointCloud.points[i].z,2));
             if (distance<40||distance>0.5){//reject close and far away points
                 j++;
                 x+=pointCloud.points[i].x;
                 y+=pointCloud.points[i].y;
+                xVector.push_back(pointCloud.points[i].x);
+                yVector.push_back(pointCloud.points[i].y);
             }
         }
         x = x/((float)j);
         y = y/((float)j);
+        std::sort(xVector.begin(), xVector.end());
+        std::sort(yVector.begin(), yVector.end());
+        int position = (int)(xVector.size()/2.0);
+        if(xVector.size()>0){
+            x = xVector[position];
+            y = yVector[position];
+            pointCloud = pcl::PointCloud<pcl::PointXYZ>();
 
-        pointCloud = pcl::PointCloud<pcl::PointXYZ>();
-
-        pcl::PointXYZ newPoint;
-        newPoint.x=x;
-        newPoint.y=y;
-        pointCloud.push_back(newPoint);
+            pcl::PointXYZ newPoint;
+            newPoint.x=x;
+            newPoint.y=y;
+            pointCloud.push_back(newPoint);
+        }
     }
 
     void callbackAngle(const std_msgs::Float64::ConstPtr &msg) {

@@ -5,24 +5,25 @@
 #ifndef SONAR_SENSOR_GAZEBO_ROTATINGSONARROSPLUGIN_H
 #define SONAR_SENSOR_GAZEBO_ROTATINGSONARROSPLUGIN_H
 
-
-
+//#include <gazebo/plugins/GpuRayPlugin.hh>
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
 #include <gazebo/transport/transport.hh>
 #include <gazebo/msgs/msgs.hh>
+
 #if GAZEBO_GPU_RAY
 #include <gazebo/plugins/GpuRayPlugin.hh>
 #else
 #include <gazebo/plugins/RayPlugin.hh>
 #endif
+
+#ifndef GAZEBO_GPU_RAY
+#define GAZEBO_GPU_RAY 0
+#endif
 #if GAZEBO_GPU_RAY
-#define RaySensor GpuRaySensor
-#define STR_Gpu  "Gpu"
-#define STR_GPU_ "GPU "
-#else
-#define STR_Gpu  ""
-#define STR_GPU_ ""
+#define RotatingSonarRosPlugin RotatingSonarRosGpuPlugin
+#define RayPlugin GpuRayPlugin
+#define RaySensorPtr GpuRaySensorPtr
 #endif
 
 

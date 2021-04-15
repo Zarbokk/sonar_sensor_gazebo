@@ -34,6 +34,11 @@ install(DIRECTORY launch meshes rviz urdf world
 add_library(rotating_sonar_control_plugin SHARED src/rotatingSonarControlPlugin.cc)
 target_link_libraries(rotating_sonar_control_plugin ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
 
+add_library(rotating_sonar_ros_gpu_plugin SHARED src/rotatingSonarRosPlugin.cc)
+target_link_libraries(rotating_sonar_ros_gpu_plugin ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES} GpuRayPlugin)
+target_compile_definitions(rotating_sonar_ros_gpu_plugin PRIVATE GAZEBO_GPU_RAY=1)
+
+
 add_library(rotating_sonar_ros_plugin SHARED src/rotatingSonarRosPlugin.cc)
 target_link_libraries(rotating_sonar_ros_plugin ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES} RayPlugin)
 

@@ -64,14 +64,14 @@
 
                   <!-- Position the ray sensor based on the specification. Also rotate
                        it by 90 degrees around the X-axis so that the <horizontal> rays
-                       become vertical -->
+                       become vertical gpu_ray-->
                       <pose>0 0 0 1.5707 0 0</pose>
                       <visualize>true</visualize>
-                      <update_rate>5</update_rate>
+                      <update_rate>5</update_rate><!-- sets number of points 10*x=nummberOfPoints-->
                       <ray>
                         <scan>
                           <horizontal>
-                            <!-- The sonar uses 32 beams(samples) -->
+                            <!-- The sonar uses 32 beams(samples) -0.18622663-->
                             <samples>32</samples>
                             <resolution>1</resolution>
                             <min_angle>-0.18622663</min_angle>
